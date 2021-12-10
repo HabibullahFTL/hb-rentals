@@ -1,5 +1,12 @@
-import Head from 'next/head'
-export default function Home() {
+import Head from 'next/head';
+import Banner from '../component/Banner';
+import Footer from '../component/Footer';
+import Header from '../component/Header';
+import LargeCard from '../component/LargeCard';
+import { MediumCard } from '../component/MediumCard';
+import SmallCard from '../component/SmallCard';
+
+export default function Home({ exploreData, cardsData }) {
   return (
     <div>
       <Head>
@@ -8,9 +15,51 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        Welcome to Next.js world!
+      <Header />
+      <Banner />
+      <main className="max-w-4xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto px-8">
+        <section className="">
+          <h1 className="text-3xl xl:text-4xl font-semibold py-6">Explore nearby</h1>
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {exploreData?.map(item => (<SmallCard
+              key={item.img}
+              img={item.img}
+              location={item.location}
+              distance={item.distance}></SmallCard>))}
+          </div>
+        </section>
+        <section className="">
+          <h1 className="text-3xl xl:text-4xl font-semibold py-6">Live Anywhere</h1>
+          <div className="flex space-x-3 overflow-scroll scrollbar-hide p-3 -ml-3">
+            {
+              cardsData?.map(item => (
+                <MediumCard
+                  key={item.img}
+                  img={item.img}
+                  title={item.title} />
+              ))
+            }
+          </div>
+        </section>
+        <LargeCard
+          img="https://links.papareact.com/4cj"
+          title="The Greatest Outdoors"
+          description="Wishlists curated by Airbnb."
+          buttonText="Get Inspired"
+        />
       </main>
+      <Footer />
     </div>
   )
+}
+
+export async function getStaticProps() {
+  const exploreData = await fetch('http://localhost:3000/fakeData/exploreData.json').then(res => res.json());
+  const cardsData = await fetch('http://localhost:3000/fakeData/cardsData.json').then(res => res.json());
+  return {
+    props: {
+      exploreData,
+      cardsData,
+    }
+  }
 }
